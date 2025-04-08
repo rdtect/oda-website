@@ -1,0 +1,374 @@
+/* General Org Chart Container */
+.orgChartContainer {
+  /* Styles for the overall container if needed */
+}
+
+.orgChart {
+  position: relative;
+  overflow: hidden;
+  height: auto;
+  min-height: 600px; /* Adjust as needed */
+  background: rgba(30,30,30,0.3); /* Slightly darker for contrast */
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  border-radius: 0.5rem; /* 8px */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: height 0.3s ease;
+}
+
+.chartInnerContainer {
+  min-width: 100%;
+  transition: transform 0.15s ease-out; /* Faster transition for panning */
+  transform-origin: center center;
+}
+
+.chartInnerContainer.dragging {
+  cursor: grabbing;
+}
+
+.chartInnerContainer:not(.dragging) {
+  cursor: grab;
+}
+
+/* Layout Structure */
+.level {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.connectorVertical {
+  height: 40px;
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 0 auto 40px; /* Centered between levels */
+}
+
+/* Node Card Base Styles */
+.nodeCard {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: rgba(30, 30, 30, 0.7);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.nodeCard:hover,
+.nodeCard.active {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4); /* Enhanced shadow */
+  background: rgba(45, 45, 45, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.nodeCard.selected {
+  background: rgba(55, 55, 55, 0.95);
+  border-color: rgba(255, 255, 255, 0.6);
+  /* Dynamic box-shadow will be applied inline based on department color */
+}
+
+/* Node Card Content */
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden; /* In case image is used */
+}
+
+.nodeCard:hover .avatar,
+.nodeCard.active .avatar {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.avatar.small {
+  width: 40px;
+  height: 40px;
+}
+
+.initials {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.info {
+  text-align: left;
+  flex: 1;
+  overflow: hidden; /* Prevent long names/roles from breaking layout */
+}
+
+.name {
+  font-weight: 500;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.role {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.teamSize {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  cursor: pointer; /* Indicate clickable for expanding */
+}
+
+.nodeCard:hover .teamSize,
+.nodeCard.active .teamSize {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+/* Specific Node Types (Hierarchy View) */
+.executive {
+  background: linear-gradient(135deg, rgba(60, 60, 60, 0.9) 0%, rgba(30, 30, 30, 0.9) 100%);
+  min-width: 220px;
+}
+
+.cLevel {
+  background: linear-gradient(135deg, rgba(50, 50, 50, 0.8) 0%, rgba(25, 25, 25, 0.8) 100%);
+  width: 100%;
+}
+
+.director {
+  margin-bottom: 15px;
+}
+
+.teamMember {
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  background: rgba(20, 20, 20, 0.5);
+}
+
+.teamMember .info {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Department Structure (Hierarchy View) */
+.departmentsContainer {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive columns */
+  gap: 30px;
+}
+
+.department {
+  margin-bottom: 30px;
+  padding-left: 20px;
+  transition: all 0.5s ease;
+  /* Border applied inline based on department color */
+}
+
+.departmentName {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  /* Color applied inline */
+}
+
+.departmentMembers {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+.department.expanded .departmentMembers {
+  max-height: 2000px; /* Allow ample space */
+  opacity: 1;
+  margin-top: 20px;
+}
+
+.subLevel {
+  display: grid;
+  grid-template-columns: 1fr; /* Stack directors/managers */
+  gap: 20px;
+}
+
+.subNodeContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  padding-left: 25px; /* Indentation for hierarchy */
+}
+
+/* Connector line for sub-nodes */
+.subNodeContainer::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -10px; /* Adjust vertical position */
+  bottom: 0;
+  width: 2px;
+  background-color: rgba(255,255,255,0.15);
+}
+
+.teamMembersList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  margin-top: 10px;
+  padding-left: 25px; /* Further indentation */
+  position: relative;
+}
+
+/* Connector lines for team members */
+.teamMembersList::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: rgba(255,255,255,0.1);
+}
+
+.teamMembersList > .nodeCard::before {
+  content: '';
+  position: absolute;
+  left: -25px; /* Connect to the vertical line */
+  top: 50%;
+  width: 25px;
+  height: 2px;
+  background-color: rgba(255,255,255,0.1);
+}
+
+/* Department View Styles */
+.departmentView {
+  padding: 10px;
+}
+
+.departmentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive columns */
+  gap: 20px;
+}
+
+.departmentColumn {
+  background: rgba(30, 30, 30, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.departmentHeader {
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* Background color applied inline */
+  color: white;
+}
+
+.departmentMembersGrid {
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.flatCard {
+  background: rgba(40, 40, 40, 0.7);
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.flatCard:hover {
+  transform: translateY(-3px);
+  background: rgba(50, 50, 50, 0.9);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.flatCard.selected {
+    background: rgba(60, 60, 60, 0.9);
+    border-color: rgba(255,255,255,0.3);
+}
+
+.skillsList {
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.skillTag {
+  font-size: 0.65rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Animations */
+@keyframes fadeInNode {
+  from { opacity: 0; transform: scale(0.95) translateY(5px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animateFadeInNode {
+  animation: fadeInNode 0.4s ease-out backwards;
+}
+
+/* Stagger animation delays - apply inline if needed, or via specific classes */
+.executive { animation-delay: 0.1s; }
+.cLevel { animation-delay: 0.2s; }
+.director { animation-delay: 0.3s; }
+.teamMember { animation-delay: 0.4s; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animateSlideIn {
+  animation: slideIn 0.3s ease forwards;
+}
+
+/* Shadow Glow effect for controls */
+.shadowGlow {
+  box-shadow: 0 0 15px rgba(255,255,255,0.15), 0 0 5px rgba(255,255,255,0.1) inset;
+}

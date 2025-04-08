@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Color variables */
+  --color-bg: #000000;
+  --color-text: #ffffff;
+  --color-text-secondary: #a0a0a0;
+  --color-accent: #ffffff;
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  
+  /* Animation variables */
+  --transition-fast: 150ms;
+  --transition-medium: 300ms;
+  --transition-slow: 500ms;
+  
+  /* Shadow variables */
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-strong: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  /* Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  height: 100%;
+  /* Reduce repaints with hardware acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
+}
+
+/* Ensure bg.png is loaded correctly at full opacity */
+.section-bg {
+  background-image: url("./bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  /* Use will-change to hint browser about animations */
+  will-change: transform, opacity;
+}
+
+/* Remove the overlay for full opacity of the background image */
+.section-bg::before {
+  content: none; /* Disabling the overlay */
+}
+
+.section-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Add a very subtle text shadow to ensure readability of text on the background */
+.section-bg h1,
+.section-bg h2,
+.section-bg h3,
+.section-bg p {
+  text-shadow: var(--shadow-subtle);
+}
+
+/* Responsive text sizing */
+@media (max-width: 768px) {
+  h1,
+  h2 {
+    font-size: 2.5rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Enhanced UI styles */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: var(--transition-medium);
+}
+
+.hover-lift {
+  transition: transform var(--transition-medium) ease-in-out;
+  /* Hint the browser about the upcoming transform */
+  will-change: transform;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+}
+
+/* Optimized animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Improved scrollbar style */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  transition: background-color var(--transition-fast) ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Utility classes for common animations */
+.animate-fade-in {
+  animation: fadeIn var(--transition-medium) ease forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp var(--transition-medium) ease forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown var(--transition-medium) ease forwards;
+}
+
+/* Optimize page transitions */
+.page-transition-enter {
+  opacity: 0;
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transition: opacity var(--transition-medium);
+}
+
+.page-transition-exit {
+  opacity: 1;
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+}
+
+/* Optimize image rendering */
+img {
+  image-rendering: auto;
+  /* Prevent image flickering */
+  backface-visibility: hidden;
+}
